@@ -7,15 +7,35 @@ spark = (SparkSession.builder
          .config(conf=SparkConf())
          .getOrCreate())
 
+# Pathes to datasets
 
-# create schema
+TITLE_CREW_DATASET_PATH = ".\\datasets\\title.crew.tsv.gz"
+TITLE_BASICS_DATASET_PATH = ".\\datasets\\title.basics.tsv.gz"
 
-schema = t.StructType([
-    t.StructField("name", t.StringType(), nullable=True)
+# Constants
+
+SEP = "\t"
+
+# Schemas
+
+TITLE_BASICS_SCHEMA = t.StructType([
+    t.StructField("tconst", t.StringType(), nullable=False),
+    t.StructField("titleType", t.StringType()),
+    t.StructField("primaryTitle", t.StringType()),
+    t.StructField("originalTitle", t.StringType()),
+    t.StructField("isAdult", t.BooleanType()),
+    t.StructField("startYear", t.DateType()),
+    t.StructField("endYear", t.DateType()),
+    t.StructField("runtimeMinutes", t.StringType()),
+    t.StructField("genres", t.StringType()) # Array type not supported in csv
 ])
 
-data = [("John",), ("Carl",)]
 
-name_df = spark.createDataFrame(data, schema)
+# Read tsv file
 
-name_df.show()
+title_basics_df = spark.read.csv(TITLE_BASICS_DATASET_PATH, header=True, sep=SEP, schema=TITLE_BASICS_SCHEMA)
+
+# Print Schema and n-first elements
+
+title_basics_df.printSchema()
+title_basics_df.show(6)
