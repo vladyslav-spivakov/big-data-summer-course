@@ -1,39 +1,35 @@
 from pyspark.sql import SparkSession
 from pyspark import SparkConf
 import pyspark.sql.types as t
+
+import imdb_utils.config as imdb_conf
+
 spark = (SparkSession.builder
-         .master('local')
-         .appName('my_assignment')
+         .master(imdb_conf.MASTER)
+         .appName(imdb_conf.APP_NAME)
          .config(conf=SparkConf())
          .getOrCreate())
 
-# Pathes to datasets
-
-TITLE_CREW_DATASET_PATH = ".\\datasets\\title.crew.tsv.gz"
-TITLE_BASICS_DATASET_PATH = ".\\datasets\\title.basics.tsv.gz"
-
-# Constants
-
-SEP = "\t"
-
-# Schemas
+import imdb_utils.columns as c
 
 TITLE_BASICS_SCHEMA = t.StructType([
-    t.StructField("tconst", t.StringType(), nullable=False),
-    t.StructField("titleType", t.StringType()),
-    t.StructField("primaryTitle", t.StringType()),
-    t.StructField("originalTitle", t.StringType()),
-    t.StructField("isAdult", t.BooleanType()),
-    t.StructField("startYear", t.DateType()),
-    t.StructField("endYear", t.DateType()),
-    t.StructField("runtimeMinutes", t.StringType()),
-    t.StructField("genres", t.StringType()) # Array type not supported in csv
+    t.StructField(c.TCONST, t.StringType(), nullable=False),
+    t.StructField(c.TITLE_TYPE, t.StringType()),
+    t.StructField(c.PRIMARY_TITLE, t.StringType()),
+    t.StructField(c.ORIGINAL_TITLE, t.StringType()),
+    t.StructField(c.IS_ADULT, t.BooleanType()),
+    t.StructField(c.START_YEAR, t.DateType()),
+    t.StructField(c.END_YEAR, t.DateType()),
+    t.StructField(c.RUNTIME_MINUTES, t.StringType()),
+    t.StructField(c.GENRES, t.StringType())  # Array
 ])
 
 
 # Read tsv file
 
-title_basics_df = spark.read.csv(TITLE_BASICS_DATASET_PATH, header=True, sep=SEP, schema=TITLE_BASICS_SCHEMA)
+title_basics_df = spark.read.csv(imdb_conf.TITLE_BASICS_DATASET_PATH,
+                                 header=True, sep=imdb_conf.SEP,
+                                 schema=TITLE_BASICS_SCHEMA)
 
 # Print Schema and n-first elements
 
