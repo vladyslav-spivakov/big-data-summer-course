@@ -1,20 +1,14 @@
 from pyspark.sql import SparkSession
 from pyspark import SparkConf
 import pyspark.sql.types as t
+
+import imdb_utils.config as imdb_conf
+
 spark = (SparkSession.builder
-         .master('local')
-         .appName('my_assignment')
+         .master(imdb_conf.MASTER)
+         .appName(imdb_conf.APP_NAME)
          .config(conf=SparkConf())
          .getOrCreate())
-
-# Pathes to datasets
-
-TITLE_CREW_DATASET_PATH = ".\\datasets\\title.crew.tsv.gz"
-TITLE_BASICS_DATASET_PATH = ".\\datasets\\title.basics.tsv.gz"
-
-# Constants
-
-SEP = "\t"
 
 # Schemas
 
@@ -33,7 +27,9 @@ TITLE_BASICS_SCHEMA = t.StructType([
 
 # Read tsv file
 
-title_basics_df = spark.read.csv(TITLE_BASICS_DATASET_PATH, header=True, sep=SEP, schema=TITLE_BASICS_SCHEMA)
+title_basics_df = spark.read.csv(imdb_conf.TITLE_BASICS_DATASET_PATH,
+                                 header=True, sep=imdb_conf.SEP,
+                                 schema=TITLE_BASICS_SCHEMA)
 
 # Print Schema and n-first elements
 
